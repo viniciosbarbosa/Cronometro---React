@@ -20,7 +20,9 @@ const Table = ({ dataTableList }: { dataTableList: DataTables[] }) => {
         {dataTableList.map((item, index) => (
           <TableBodyRow key={index}>
             <TableCell>{item.data}</TableCell>
-            <TableCell>{item.time} Segundos</TableCell>
+            <TableCell>
+              {item.time.minutes}:{item.time.seconds},{item.time.centiseconds}
+            </TableCell>
           </TableBodyRow>
         ))}
       </tbody>

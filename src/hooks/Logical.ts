@@ -2,7 +2,17 @@ import { useState, useRef } from "react";
 import { DataTables } from "../interface/DatasTable";
 
 export const useTimeTracking = () => {
-  const [time, setTime] = useState(0);
+  const [time, setTime] = useState<{
+    minutes: number;
+    seconds: number;
+    centiseconds: number;
+    milliseconds: number;
+  }>({
+    minutes: 0,
+    seconds: 0,
+    centiseconds: 0,
+    milliseconds: 0,
+  });
   const intervalRef = useRef<number | null>(null);
   const [saveTime, setSaveTime] = useState(false);
   const [dataTimeList, setDataTimeList] = useState<Array<DataTables>>([]);
@@ -10,23 +20,31 @@ export const useTimeTracking = () => {
   const startTimer = () => {
     if (intervalRef.current) clearInterval(intervalRef.current);
 
+    const startTime = Date.now();
     const intervalID = setInterval(() => {
-      setTime((prevTime) => prevTime + 1);
-    }, 1000);
+      const currentTime = Date.now();
+      const elapsedTime = currentTime - startTime;
+      const minutes = Math.floor(elapsedTime / 60000);
+      const seconds = Math.floor((elapsedTime % 60000) / 1000);
+      const centiseconds = Math.floor((elapsedTime % 1000) / 10);
+      const milliseconds = elapsedTime % 10;
+
+      setTime({ minutes, seconds, centiseconds, milliseconds });
+    }, 10);
     intervalRef.current = intervalID;
   };
 
   const stopTimer = () => {
-    if (time === 0) return;
+    if (time.minutes === 0 && time.seconds === 0) return;
 
     clearInterval(intervalRef.current!);
     setSaveTime(true);
   };
 
   const restartTimer = () => {
-    if (time === 0) return;
+    if (time.minutes === 0 && time.seconds === 0) return;
 
-    setTime(0);
+    setTime({ minutes: 0, seconds: 0, centiseconds: 0, milliseconds: 0 });
     startTimer();
   };
 
@@ -46,12 +64,12 @@ export const useTimeTracking = () => {
       },
     ]);
 
-    setTime(0);
+    setTime({ minutes: 0, seconds: 0, centiseconds: 0, milliseconds: 0 });
     setSaveTime(false);
   };
 
   const restartSettings = () => {
-    setTime(0);
+    setTime({ minutes: 0, seconds: 0, centiseconds: 0, milliseconds: 0 });
     setSaveTime(false);
     clearInterval(intervalRef.current!);
   };

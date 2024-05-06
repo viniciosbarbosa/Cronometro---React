@@ -1,4 +1,9 @@
 export interface DataTables {
   data: string;
-  time: number;
+  time: {
+    minutes: number;
+    seconds: number;
+    centiseconds: number;
+    milliseconds: number;
+  };
 }
