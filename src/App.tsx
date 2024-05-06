@@ -9,6 +9,9 @@ function App() {
   const {
     time,
     saveTime,
+    isContinue,
+    continueCount,
+    notContinueCount,
     dataTimeList,
     startTimer,
     stopTimer,
@@ -27,6 +30,14 @@ function App() {
         <Button action={restartTimer} title="Restart" bgColor="#FF0000" />
 
         {saveTime && (
+          <div>
+            <p>Desejar continuar a contagem?</p>
+            <Button action={continueCount} title="Sim" bgColor="#228B22" />
+            <Button action={notContinueCount} title="Não" bgColor="#FF0000" />
+          </div>
+        )}
+
+        {isContinue && (
           <div>
             <p>Desejar Salvar dados ?</p>
             <Button action={saveDataList} title="Sim" bgColor="#228B22" />

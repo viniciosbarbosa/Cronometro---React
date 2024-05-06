@@ -16,6 +16,7 @@ export const useTimeTracking = () => {
   const intervalRef = useRef<number | null>(null);
   const [saveTime, setSaveTime] = useState(false);
   const [dataTimeList, setDataTimeList] = useState<Array<DataTables>>([]);
+  const [isContinue, setIsContinue] = useState(false);
 
   const startTimer = () => {
     if (intervalRef.current) clearInterval(intervalRef.current);
@@ -41,6 +42,32 @@ export const useTimeTracking = () => {
     setSaveTime(true);
   };
 
+  const continueCount = () => {
+    const startTime =
+      Date.now() -
+      (time.minutes * 60000 +
+        time.seconds * 1000 +
+        time.centiseconds * 10 +
+        time.milliseconds);
+    const intervalID = setInterval(() => {
+      const currentTime = Date.now();
+      const elapsedTime = currentTime - startTime;
+      const minutes = Math.floor(elapsedTime / 60000);
+      const seconds = Math.floor((elapsedTime % 60000) / 1000);
+      const centiseconds = Math.floor((elapsedTime % 1000) / 10);
+      const milliseconds = elapsedTime % 10;
+
+      setTime({ minutes, seconds, centiseconds, milliseconds });
+    }, 10);
+    intervalRef.current = intervalID;
+    setSaveTime(false);
+  };
+
+  const notContinueCount = () => {
+    setSaveTime(false);
+    setIsContinue(true);
+  };
+
   const restartTimer = () => {
     if (time.minutes === 0 && time.seconds === 0) return;
 
@@ -49,6 +76,7 @@ export const useTimeTracking = () => {
   };
 
   const saveDataList = () => {
+    setIsContinue(false);
     setDataTimeList([
       ...dataTimeList,
       {
@@ -71,17 +99,21 @@ export const useTimeTracking = () => {
   const restartSettings = () => {
     setTime({ minutes: 0, seconds: 0, centiseconds: 0, milliseconds: 0 });
     setSaveTime(false);
+    setIsContinue(false);
     clearInterval(intervalRef.current!);
   };
 
   return {
     time,
     saveTime,
+    isContinue,
     dataTimeList,
     startTimer,
     stopTimer,
     restartTimer,
     saveDataList,
+    continueCount,
+    notContinueCount,
     restartSettings,
   };
 };
